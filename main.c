@@ -11,6 +11,7 @@ int main(void)
 	char PS1[100] = "$"; 
 
 	FILE *inFile;
+	FILE *outFile;
 	char fileReader;
 
 	int i;
@@ -31,22 +32,29 @@ int main(void)
 
 		else if(!strcmp(token,"echo"))
 		{
-			token = strtok(NULL, " ");
-			if (!strcmp(token, "-n"))
+			
+			if ( (token = strtok(NULL, " ")) != NULL)
 			{
-				token = strtok(NULL, "-");
-				printf("\r%s",token);
+				if (!strcmp(token, "-n"))
+				{
+					token = strtok(NULL, "-");
+					printf("\r%s",token);
+				}
+				else if(token != NULL)
+				{	
+					printf("%s ",token);
+					token = strtok(NULL, "-");
+					fflush(stdout);
+					if (token != NULL)
+						printf("%s\n",token);
+					else
+						printf("\n",token);
+				}
 			}
 			else
-			{	
-				printf("%s ",token);
-				token = strtok(NULL, "-");
-				fflush(stdout);
-				if (token != NULL)
-					printf("%s\n",token);
-				else
-					printf("\n",token);
-			}
+			 printf("Echo returns its given values.\n 
+				    Example: \"echo test test\" returns \"test test\"\n
+			        the flag -n return the values on the same line");
 		}
 
 
@@ -57,7 +65,6 @@ int main(void)
 		}
 
 
-
 		else if(!strcmp(token,"cat"))
 		{
 			token = strtok(NULL, " ");
@@ -65,6 +72,33 @@ int main(void)
 			while ((fileReader=fgetc(inFile)) != EOF)
 				printf("%c",fileReader);
 			fclose(inFile);
+		}
+
+
+
+		else if(!strcmp(token,"cp"))
+		{
+			token = strtok(NULL, " ");
+			inFile = fopen(token,"r");
+
+			token = strtok(NULL, " ");
+			remove(token);
+			outFile = fopen(token,"w");
+
+			while ((fileReader=fgetc(inFile)) != EOF)
+				fputc (fileReader, outFile);
+
+			fclose(inFile);
+			fclose(outFile);
+
+		}
+
+
+
+		else if(!strcmp(token,"rm"))
+		{
+			token = strtok(NULL, " ");
+			remove(token);
 		}
 
 
