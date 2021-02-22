@@ -10,19 +10,25 @@ int main(void)
 
 	char PS1[100] = "$"; 
 
+	FILE *inFile;
+	char fileReader;
+
 	int i;
 
-// Loops runs the whole time the shell is running
+/* Loops runs the whole time the shell is running */
 	while(running == 1)
 	{
-// Collect and Break up user input
+/* Collect and Break up user input */
 		printf("%s ",PS1);
 		scanf(" %[^\n]",input);
 		token = strtok(input, " ");
 
-// Commands
+/* Commands */
 		if(!strcmp(token,"exit"))
 			running = 0;
+
+
+
 		else if(!strcmp(token,"echo"))
 		{
 			token = strtok(NULL, " ");
@@ -33,18 +39,36 @@ int main(void)
 			}
 			else
 			{	
-				printf("%s",token);
+				printf("%s ",token);
 				token = strtok(NULL, "-");
 				fflush(stdout);
-				printf("%s\n",token);
+				if (token != NULL)
+					printf("%s\n",token);
+				else
+					printf("\n",token);
 			}
-				
 		}
+
+
 		else if(!strcmp(token,"PS1"))
 		{	
 			token = strtok(NULL, "-");
 			strcpy(PS1, token);
 		}
+
+
+
+		else if(!strcmp(token,"cat"))
+		{
+			token = strtok(NULL, " ");
+			inFile = fopen(token,"r");
+			while ((fileReader=fgetc(inFile)) != EOF)
+				printf("%c",fileReader);
+			fclose(inFile);
+		}
+
+
+
 		else
 			printf("%s: Command Not Found!\n",token);
 	}
