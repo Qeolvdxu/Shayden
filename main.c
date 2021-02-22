@@ -5,6 +5,8 @@ int main(void)
 {
 	int running = 1;
 
+	int check;
+
 	char* token; 
 	char* input; 
 
@@ -52,44 +54,56 @@ int main(void)
 				}
 			}
 			else
-			 printf("Echo returns its given values.\n 
-				    Example: \"echo test test\" returns \"test test\"\n
-			        the flag -n return the values on the same line");
+			 printf("Echo returns its given values.\nExample: \"echo test test\" returns \"test test\"\nThe flag -n return the values on the same line\n");
 		}
 
 
 		else if(!strcmp(token,"PS1"))
 		{	
-			token = strtok(NULL, "-");
-			strcpy(PS1, token);
+			if ( (token = strtok(NULL, "-")) != NULL)
+				strcpy(PS1, token);
+			else
+				printf("Please specify the string for PS1");
 		}
 
 
 		else if(!strcmp(token,"cat"))
 		{
-			token = strtok(NULL, " ");
-			inFile = fopen(token,"r");
-			while ((fileReader=fgetc(inFile)) != EOF)
-				printf("%c",fileReader);
-			fclose(inFile);
+			if ( (token = strtok(NULL, " ")) != NULL)
+			{
+					inFile = fopen(token,"r");
+					while ((fileReader=fgetc(inFile)) != EOF)
+						printf("%c",fileReader);
+					fclose(inFile);
+			}
+			else
+				printf("Please enter the file you want the contents of returned to you\n");
 		}
 
 
 
 		else if(!strcmp(token,"cp"))
 		{
-			token = strtok(NULL, " ");
-			inFile = fopen(token,"r");
+			if ( (token = strtok(NULL, " ")) != NULL)
+			{
+					inFile = fopen(token,"r");
 
-			token = strtok(NULL, " ");
-			remove(token);
-			outFile = fopen(token,"w");
+					if ( (token = strtok(NULL, " ")) != NULL)
+					{
+							remove(token);
+							outFile = fopen(token,"w");
 
-			while ((fileReader=fgetc(inFile)) != EOF)
-				fputc (fileReader, outFile);
+							while ((fileReader=fgetc(inFile)) != EOF)
+								fputc (fileReader, outFile);
 
-			fclose(inFile);
-			fclose(outFile);
+							fclose(inFile);
+							fclose(outFile);
+					}
+					else
+						printf("Please supply the name of the destination file\n");	
+			}
+			else
+				printf("Please supply the name of the source file\n");	
 
 		}
 
@@ -97,9 +111,51 @@ int main(void)
 
 		else if(!strcmp(token,"rm"))
 		{
-			token = strtok(NULL, " ");
-			remove(token);
+			if ( (token = strtok(NULL, " ")) != NULL)
+			{
+					check = remove(token);
+					if(!check)
+						printf("%s removed correctly\n", token);
+					else
+						printf("could not remove file: %s\n", token);
+			}
+			else
+				printf("Please supply the name of the file you want to remove\n");
 		}
+
+
+
+		else if(!strcmp(token,"mkdir"))
+		{
+			if ( (token = strtok(NULL, " ")) != NULL)
+			{	
+					check = mkdir(token, 0777);
+					if(!check)
+						printf("%s created correctly\n", token);
+					else
+						printf("could not create directory: %s\n", token);
+			}
+			else
+				printf("Please supply the name of the directory you want to create\n");
+		}
+
+
+
+
+		else if(!strcmp(token,"rmdir"))
+		{
+			if ( (token = strtok(NULL, " ")) != NULL)
+			{
+					check = rmdir(token);
+					if(!check)
+						printf("%s removed directory correctly\n", token);
+					else
+						printf("could not remove directory: %s\n", token);
+			}
+			else
+				printf("Please supply the name of the directory you want to remove\n");
+		}
+
 
 
 
