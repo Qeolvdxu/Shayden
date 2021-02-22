@@ -8,8 +8,7 @@ int main(void)
 	char* token; 
 	char* input; 
 
-	char* PS1; 
-//	PS1 = "$ ";
+	char PS1[100] = "$"; 
 
 	int i;
 
@@ -17,7 +16,7 @@ int main(void)
 	while(running == 1)
 	{
 // Collect and Break up user input
-//		printf("%s ",PS1);
+		printf("%s ",PS1);
 		scanf(" %[^\n]",input);
 		token = strtok(input, " ");
 
@@ -26,12 +25,25 @@ int main(void)
 			running = 0;
 		else if(!strcmp(token,"echo"))
 		{
-			token = strtok(NULL, "-");
-			printf("%s\n",token);
+			token = strtok(NULL, " ");
+			if (!strcmp(token, "-n"))
+			{
+				token = strtok(NULL, "-");
+				printf("\r%s",token);
+			}
+			else
+			{	
+				printf("%s",token);
+				token = strtok(NULL, "-");
+				fflush(stdout);
+				printf("%s\n",token);
+			}
+				
 		}
 		else if(!strcmp(token,"PS1"))
-		{
-				
+		{	
+			token = strtok(NULL, "-");
+			strcpy(PS1, token);
 		}
 		else
 			printf("%s: Command Not Found!\n",token);
