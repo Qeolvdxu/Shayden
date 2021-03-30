@@ -11,18 +11,28 @@ int main(int argc, char **argv)
 	/* Default to current directory */
 	if (argc < 2)
 		argv[1] = ".";
-	
-	dir = opendir(argv[i]);
 
-	/* Print each item until there are no more */
-	while ((direntry = readdir(dir)) != NULL)
+	if(strcmp("-a",argv[1]) == 0)
 	{
-		if(direntry->d_name[0] != echar) 
-			printf("%s  ", direntry->d_name);
+		i++;
+		echar = 0;
 	}
-	printf("\n");
+			
+	
+	if((dir = opendir(argv[i])) == NULL)
+		printf("%s does not exist\n", argv[i]);
+	else
+	{
+		/* Print each item until there are no more */
+		while ((direntry = readdir(dir)) != NULL)
+		{
+			if(direntry->d_name[0] != echar) 
+				printf("%s  ", direntry->d_name);
+		}
+		printf("\n");
 
-	closedir(dir);
+		closedir(dir);
+	}
  
 	return 0;
 }
