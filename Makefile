@@ -1,11 +1,13 @@
-SOURCE_FILES = main.c
+SOURCE_FILES = main.c myls.c
 
-OUT	= journyShell 
 CC	 = gcc
 FLAGS	 = -ansi
 
 all: $(OBJS)
-	$(CC) $(FLAGS) -o $(OUT) $(SOURCE_FILES)
+	$(CC) $(FLAGS) -o journyShell main.c
+
+myls: $(OBJS)
+	$(CC) $(FLAGS) -o myls myls.c
 
 clean:
-	rm -f $(OBJS) $(OUT)
+	rm -f myls journyShell

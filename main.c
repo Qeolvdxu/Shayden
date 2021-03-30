@@ -1,6 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 
+int execv(const char *path, char *const argv[])
+{
+	printf("%s %s\n", path, argv[0]);
+	return 0;
+}
+
+
 int main(void)
 {
 	int running = 1;
@@ -31,7 +38,7 @@ int main(void)
 			running = 0;
 
 
-
+/* Print out the commands input */
 		else if(!strcmp(token,"echo"))
 		{
 			
@@ -58,6 +65,7 @@ int main(void)
 		}
 
 
+/* Set the PS1 variable */
 		else if(!strcmp(token,"PS1"))
 		{	
 			if ( (token = strtok(NULL, "-")) != NULL)
@@ -67,6 +75,7 @@ int main(void)
 		}
 
 
+/* Print the contents of a specific file */
 		else if(!strcmp(token,"cat"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -81,7 +90,7 @@ int main(void)
 		}
 
 
-
+/* Copy a specific file */
 		else if(!strcmp(token,"cp"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -108,7 +117,7 @@ int main(void)
 		}
 
 
-
+/* Remove a specific file */
 		else if(!strcmp(token,"rm"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -124,7 +133,7 @@ int main(void)
 		}
 
 
-
+/* Create a directory */
 		else if(!strcmp(token,"mkdir"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -141,7 +150,7 @@ int main(void)
 
 
 
-
+/* Remove a specific directory */
 		else if(!strcmp(token,"rmdir"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -158,7 +167,19 @@ int main(void)
 
 
 
+/* Exectute a external application */
+		else if(!strcmp(token,"exec"))
+		{
+			if ( (token = strtok(NULL, " ")) != NULL)
+			{
+				/*execv(getenv("PATH"), token);*/
+			}
+			else
+				printf("Please supply the program you want to execute\n");
+		}
 
+
+/* User inputs the wrong command name */
 		else
 			printf("%s: Command Not Found!\n",token);
 	}
