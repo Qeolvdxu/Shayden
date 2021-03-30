@@ -1,12 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-
-int execv(const char *path, char *const argv[])
-{
-	printf("%s %s\n", path, argv[0]);
-	return 0;
-}
-
+#include <sys/types.h>
 
 int main(void)
 {
@@ -16,6 +11,8 @@ int main(void)
 
 	char* token; 
 	char* input; 
+	char* pathToken;
+	char temp[100];
 
 	char PS1[100] = "$"; 
 
@@ -24,6 +21,10 @@ int main(void)
 	char fileReader;
 
 	int i;
+
+	int status;
+	pid_t parent = getpid();
+	pid_t pid;
 
 /* Loops runs the whole time the shell is running */
 	while(running == 1)
@@ -38,7 +39,7 @@ int main(void)
 			running = 0;
 
 
-/* Print out the commands input */
+	/* Print out the commands input */
 		else if(!strcmp(token,"echo"))
 		{
 			
@@ -65,7 +66,7 @@ int main(void)
 		}
 
 
-/* Set the PS1 variable */
+	/* Set the PS1 variable */
 		else if(!strcmp(token,"PS1"))
 		{	
 			if ( (token = strtok(NULL, "-")) != NULL)
@@ -75,7 +76,7 @@ int main(void)
 		}
 
 
-/* Print the contents of a specific file */
+	/* Print the contents of a specific file */
 		else if(!strcmp(token,"cat"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -90,7 +91,7 @@ int main(void)
 		}
 
 
-/* Copy a specific file */
+	/* Copy a specific file */
 		else if(!strcmp(token,"cp"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -117,7 +118,7 @@ int main(void)
 		}
 
 
-/* Remove a specific file */
+	/* Remove a specific file */
 		else if(!strcmp(token,"rm"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -133,7 +134,7 @@ int main(void)
 		}
 
 
-/* Create a directory */
+	/* Create a directory */
 		else if(!strcmp(token,"mkdir"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -150,7 +151,7 @@ int main(void)
 
 
 
-/* Remove a specific directory */
+	/* Remove a specific directory */
 		else if(!strcmp(token,"rmdir"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
@@ -167,19 +168,50 @@ int main(void)
 
 
 
-/* Exectute a external application */
+	/* Exectute a external application */
 		else if(!strcmp(token,"exec"))
 		{
 			if ( (token = strtok(NULL, " ")) != NULL)
 			{
-				/*execv(getenv("PATH"), token);*/
+				/* For Absolute path 
+				printf("test 1\n");
+				printf("%s\n",pathToken);
+				do
+				{
+					printf("test 3\n");
+					strcpy(temp,pathToken);
+					strcat(temp,"/");
+					strcat(temp,token);
+					printf("%s\n",temp);
+					execvp(temp, NULL); 
+				}while ( (pathToken = strtok(NULL, ":")) != NULL); 
+				*/
+				
+				/*if (token[0] == '.' || token[0] == '/')*/
+				/*	pathToken = strtok(getenv("PATH"), ":");*/
+				 /* For relative path  */
+					strcpy(temp,"./");
+					strcat(temp,token); 
+					pid = fork();
+
+				if (pid == -1)
+					printf("FORKING ERROR!\n");
+				else if (pid > 0)
+					waitpid(pid, &status, 0);
+				else
+				{
+					if ( execvp(temp, NULL) == -1)
+						printf("%s could not be found\n",token);
+				}
+
+				
 			}
 			else
 				printf("Please supply the program you want to execute\n");
 		}
 
 
-/* User inputs the wrong command name */
+	/* User inputs the wrong command name */
 		else
 			printf("%s: Command Not Found!\n",token);
 	}
