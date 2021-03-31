@@ -8,15 +8,17 @@ int main(int argc, char **argv)
 	char echar = '.';
 	int i = 1;
 
-	/* Default to current directory */
-	if (argc < 2)
-		argv[1] = ".";
 
+	/* Print hidden files with the -a flag */
 	if(strcmp("-a",argv[1]) == 0)
 	{
 		i++;
 		echar = 0;
 	}
+
+	/* Default to current directory */
+	if (argc < 1+i)
+		argv[i] = ".";
 			
 	
 	if((dir = opendir(argv[i])) == NULL)
