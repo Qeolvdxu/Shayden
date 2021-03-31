@@ -3,6 +3,20 @@
 #include <string.h>
 #include <sys/types.h>
 
+void tokenizer(char* string, char* delim, const char** token)
+{
+	char* temp = strtok(string, delim);
+
+	int i;
+	for (i = 0; temp != NULL; i++)
+	{
+		token[i] = temp;
+		temp = strtok(NULL,delim);
+	}
+	token[i] = "0";
+
+}
+
 int main(void)
 {
 	int running = 1;
@@ -11,8 +25,11 @@ int main(void)
 
 	char* token; 
 	char* input; 
-	char* pathToken;
-	char temp[100];
+	char* pathTok;
+	const char* pathTokens[10];
+	char* tempPaths[10];
+	/*char* path = getenv("PATH");*/
+	char* nargv[3];
 
 	char PS1[100] = "$"; 
 
@@ -42,7 +59,6 @@ int main(void)
 	/* Print out the commands input */
 		else if(!strcmp(token,"echo"))
 		{
-			
 			if ( (token = strtok(NULL, " ")) != NULL)
 			{
 				if (!strcmp(token, "-n"))
@@ -171,43 +187,34 @@ int main(void)
 	/* Exectute a external application */
 		else if(!strcmp(token,"exec"))
 		{
-			if ( (token = strtok(NULL, " ")) != NULL)
+			if ((token = strtok(NULL, " ")) != NULL)
 			{
-				/* For Absolute path 
-				printf("test 1\n");
-				printf("%s\n",pathToken);
-				do
+				if (token[0] == '.' || token[0] == '/')
+					nargv[0] = token;
+				else
 				{
-					printf("test 3\n");
-					strcpy(temp,pathToken);
-					strcat(temp,"/");
-					strcat(temp,token);
-					printf("%s\n",temp);
-					execvp(temp, NULL); 
-				}while ( (pathToken = strtok(NULL, ":")) != NULL); 
-				*/
-				
-				/*if (token[0] == '.' || token[0] == '/')*/
-				/*	pathToken = strtok(getenv("PATH"), ":");*/
-				 /* For relative path  */
-					strcpy(temp,"./");
-					strcat(temp,token); 
-					pid = fork();
-
+					tokenizer(getenv("PATH"),":",pathTokens);
+		/*
+					for (i = 0; i < 10; i++)
+					{
+						strcpy(tempPaths[i],pathTokens[i]);
+						strcat(tempPaths[i],"\");
+						strcat(tempPaths[i],nargv[0]);
+					}
+		*/
+				}
+			
+		/*	 Execute Child Process  */
+				pid = fork();
 				if (pid == -1)
 					printf("FORKING ERROR!\n");
 				else if (pid > 0)
 					waitpid(pid, &status, 0);
-				else
-				{
-					if ( execvp(temp, NULL) == -1)
-						printf("%s could not be found\n",token);
-				}
-
-				
+				else if ( execv(nargv[0], NULL) == -1)
+					printf("%s command does not exist\n",nargv[0]);
 			}
-			else
-				printf("Please supply the program you want to execute\n");
+			else 
+				printf("Enter a command to execute\n");
 		}
 
 
