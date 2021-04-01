@@ -1,7 +1,10 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 void tokenizer(char* string, char* delim, const char** token)
 {
@@ -24,10 +27,7 @@ int main(void)
 	int check;
 
 	char* token; 
-	char* input; 
-	char* pathTok;
 	const char* pathTokens[10];
-	char* tempPaths[10];
 	/*char* path = getenv("PATH");*/
 	char* nargv[3];
 
@@ -37,12 +37,10 @@ int main(void)
 	FILE *outFile;
 	char fileReader;
 
-	int i;
-
 	int status;
-	pid_t parent = getpid();
 	pid_t pid;
 
+	char* input; 
 /* Loops runs the whole time the shell is running */
 	while(running == 1)
 	{
@@ -74,7 +72,7 @@ int main(void)
 					if (token != NULL)
 						printf("%s\n",token);
 					else
-						printf("\n",token);
+						printf("Please specify what to echo.\n");
 				}
 			}
 			else
@@ -222,5 +220,5 @@ int main(void)
 		else
 			printf("%s: Command Not Found!\n",token);
 	}
-	
+	return 0;	
 }
