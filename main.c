@@ -41,7 +41,7 @@ int main(void)
 	char tempPaths[10][10] = {NULL};
 
 	int nargc;
-	char* nargv[100];
+	char* nargv[10];
 
 	FILE *inFile;
 	FILE *outFile;
@@ -54,6 +54,8 @@ int main(void)
 		printf("\n%s ",PS1);
 		scanf(" %[^\n]",input);
 		token = strtok(input, " ");
+	/*	tokenizer(input," ",nargv); */
+		
 
 /* Commands */
 		if(!strcmp(token,"exit"))
@@ -202,13 +204,14 @@ int main(void)
 					else if (pid > 0)
 						waitpid(pid, &status, 0);
 					else if ( execv(token, NULL) == -1)
-						printf("%s command does not exist\n",nargv[0]);
+						printf("%s command does not exist\n",token);
 				}
 				else
 				{
 		
 					for (i = 0; i < 10 && pathTokens[i] != NULL && pathTokens[i] != '0'; i++)
 					{	
+					/*	 Build Correct Path Directory 	*/
 						strcpy(tempPaths[i],pathTokens[i]);
 						strcat(tempPaths[i],"/");
 						strcat(tempPaths[i],token);
