@@ -22,13 +22,15 @@ void tokenizer(char* string, char* delim, const char** token)
 
 int main(void)
 {
-	int running = 1;
+	int i;
 
 	int check;
 
 	char* token; 
-	const char* pathTokens[10];
-	/*char* path = getenv("PATH");*/
+	const char* pathTokens[10] = {NULL};
+
+	char tempPaths[10][10] = {NULL};
+
 	char* nargv[3];
 
 	char PS1[100] = "$"; 
@@ -37,21 +39,22 @@ int main(void)
 	FILE *outFile;
 	char fileReader;
 
+
 	int status;
 	pid_t pid;
 
 	char* input; 
 /* Loops runs the whole time the shell is running */
-	while(running == 1)
+	while(1)
 	{
 /* Collect and Break up user input */
-		printf("%s ",PS1);
+		printf("\n%s ",PS1);
 		scanf(" %[^\n]",input);
 		token = strtok(input, " ");
 
 /* Commands */
 		if(!strcmp(token,"exit"))
-			running = 0;
+			exit(0);
 
 
 	/* Print out the commands input */
@@ -72,7 +75,7 @@ int main(void)
 					if (token != NULL)
 						printf("%s\n",token);
 					else
-						printf("Please specify what to echo.\n");
+						printf("\n");
 				}
 			}
 			else
@@ -188,37 +191,51 @@ int main(void)
 			if ((token = strtok(NULL, " ")) != NULL)
 			{
 				if (token[0] == '.' || token[0] == '/')
+				{
 					nargv[0] = token;
+				/*	 Execute Child Process  */
+					pid = fork();
+					if (pid == -1)
+						printf("FORKING ERROR!\n");
+					else if (pid > 0)
+						waitpid(pid, &status, 0);
+					else if ( execv(nargv[0], NULL) == -1)
+						printf("%s command does not exist\n",nargv[0]);
+				}
 				else
 				{
 					tokenizer(getenv("PATH"),":",pathTokens);
-		/*
-					for (i = 0; i < 10; i++)
-					{
+		
+					for (i = 0; i < 10 && pathTokens[i] != NULL && pathTokens[i] != '0'; i++)
+					{	
 						strcpy(tempPaths[i],pathTokens[i]);
-						strcat(tempPaths[i],"\");
-						strcat(tempPaths[i],nargv[0]);
+						strcat(tempPaths[i],"/");
+						strcat(tempPaths[i],token);
+
+					/*	 Execute Child Process  */
+						pid = fork();
+						if (pid == -1)
+							printf("FORKING ERROR!\n");
+						else if (pid > 0)
+							waitpid(pid, &status, 0);
+						else
+							execv(tempPaths[i], NULL);
+						printf("%s command does not exist\n",tempPaths[i]);
 					}
-		*/
+					printf("%s command does not exist\n",token);
+		
 				}
 			
-		/*	 Execute Child Process  */
-				pid = fork();
-				if (pid == -1)
-					printf("FORKING ERROR!\n");
-				else if (pid > 0)
-					waitpid(pid, &status, 0);
-				else if ( execv(nargv[0], NULL) == -1)
-					printf("%s command does not exist\n",nargv[0]);
 			}
 			else 
 				printf("Enter a command to execute\n");
 		}
 
-
 	/* User inputs the wrong command name */
 		else
 			printf("%s: Command Not Found!\n",token);
 	}
+	
+	free(tempPaths);
 	return 0;	
 }
