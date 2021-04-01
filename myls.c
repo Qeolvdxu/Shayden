@@ -8,9 +8,8 @@ int main(int argc, char **argv)
 	char echar = '.';
 	int i = 1;
 
-
 	/* Print hidden files with the -a flag */
-	if(strcmp("-a",argv[1]) == 0)
+	if(argc > 1 && strcmp("-a",argv[1]) == 0)
 	{
 		i++;
 		echar = 0;
